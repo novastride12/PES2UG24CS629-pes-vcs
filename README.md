@@ -123,22 +123,34 @@ pes init → pes add → pes commit → pes log
 
 * `./test_objects` → All tests passed
 * Object storage verified
+  <img width="725" height="269" alt="Screenshot 2026-04-21 121246" src="https://github.com/user-attachments/assets/3928a993-5950-4207-b832-e5a54e30ad96" />
+
 
 ## 🔹 Phase 2
 
 * `./test_tree` → Tree creation verified
 * `xxd` output shows raw tree structure
+  <img width="728" height="161" alt="Screenshot 2026-04-21 121400" src="https://github.com/user-attachments/assets/62a36614-501f-4b1b-8bfb-24fb6b7bdcae" />
+
 
 ## 🔹 Phase 3
 
 * `pes add` + `pes status` working
 * `.pes/index` shows metadata
+  <img width="722" height="71" alt="Screenshot 2026-04-21 121830" src="https://github.com/user-attachments/assets/451c8bbe-af17-4f0b-bcc4-3214961ee4db" />
+<img width="625" height="509" alt="Screenshot 2026-04-21 121822" src="https://github.com/user-attachments/assets/b9671ed0-5a4c-47cf-8882-b020ec76fc84" />
+
+  
 
 ## 🔹 Phase 4
 
 * `pes log` shows full commit history
 * References (`HEAD`, `refs/heads/main`) working
 * Object store growth verified
+  <img width="720" height="120" alt="Screenshot 2026-04-21 122206" src="https://github.com/user-attachments/assets/c9b77831-d56e-4363-9bba-cf497f7274d7" />
+<img width="714" height="88" alt="Screenshot 2026-04-21 122231" src="https://github.com/user-attachments/assets/03115962-b1bc-4575-992e-f4b50b609219" />
+<img width="670" height="119" alt="Screenshot 2026-04-21 122157" src="https://github.com/user-attachments/assets/99398e81-ec13-43c5-afad-b23231d48e91" />
+
 
 ## 🔹 Final Integration
 
