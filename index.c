@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
+  // ADD THIS AT TOP
 
 // ─── PROVIDED ────────────────────────────────────────────────────────────────
 
@@ -133,14 +134,35 @@ int index_status(const Index *index) {
 //   - fopen (with "r"), fscanf, fclose : reading the text file line by line
 //   - hex_to_hash                      : converting the parsed string to ObjectID
 //
-// Returns 0 on success, -1 on error.
+// Returns 0 on success, -1 on error
 int index_load(Index *index) {
-    // TODO: Implement index loading
-    // (See Lab Appendix for logical steps)
-    (void)index;
-    return -1;
-}
+    FILE *fp = fopen(INDEX_FILE, "r");
 
+    index->count = 0;
+
+    if (!fp) return 0;
+
+    while (1) {
+        IndexEntry *entry = &index->entries[index->count];
+
+        char hex[HASH_HEX_SIZE + 1];
+
+        int ret = fscanf(fp, "%o %64s %lu %u %511s\n",
+            &entry->mode,
+            hex,
+            &entry->mtime_sec,
+            &entry->size,
+            entry->path);
+
+        if (ret != 5) break;
+
+        hex_to_hash(hex, &entry->hash);   // ✅ FIXED
+        index->count++;
+    }
+
+    fclose(fp);
+    return 0;
+}
 // Save the index to .pes/index atomically.
 //
 // HINTS - Useful functions and syscalls:
@@ -151,13 +173,29 @@ int index_load(Index *index) {
 //   - rename                           : atomically moving the temp file over the old index
 //
 // Returns 0 on success, -1 on error.
-int index_save(const Index *index) {
-    // TODO: Implement atomic index saving
-    // (See Lab Appendix for logical steps)
-    (void)index;
-    return -1;
-}
 
+int index_save(const Index *index) {
+    FILE *fp = fopen(INDEX_FILE, "w");
+    if (!fp) return -1;
+
+    for (int i = 0; i < index->count; i++) {
+        char hex[HASH_HEX_SIZE + 1];
+        hash_to_hex(&index->entries[i].hash, hex);  // ✅ FIXED
+
+        fprintf(fp, "%o %s %lu %u %s\n",
+            index->entries[i].mode,
+            hex,
+            index->entries[i].mtime_sec,
+            index->entries[i].size,
+            index->entries[i].path);
+    }
+
+    fflush(fp);
+    fsync(fileno(fp));
+    fclose(fp);
+
+    return 0;
+}
 // Stage a file for the next commit.
 //
 // HINTS - Useful functions and syscalls:
@@ -168,8 +206,41 @@ int index_save(const Index *index) {
 //
 // Returns 0 on success, -1 on error.
 int index_add(Index *index, const char *path) {
-    // TODO: Implement file staging
-    // (See Lab Appendix for logical steps)
-    (void)index; (void)path;
-    return -1;
+    struct stat st;
+    if (stat(path, &st) != 0) return -1;
+
+    FILE *fp = fopen(path, "rb");
+    if (!fp) return -1;
+
+    void *data = malloc(st.st_size);
+    if (!data) {
+        fclose(fp);
+        return -1;
+    }
+
+    fread(data, 1, st.st_size, fp);
+    fclose(fp);
+
+    ObjectID hash;
+
+    if (object_write(OBJ_BLOB, data, st.st_size, &hash) != 0) {
+        free(data);
+        return -1;
+    }
+
+    free(data);
+
+    IndexEntry *entry = index_find(index, path);
+
+    if (!entry) {
+        entry = &index->entries[index->count++];
+    }
+
+    strcpy(entry->path, path);
+    entry->hash = hash;              // ✅ FIXED
+    entry->mode = st.st_mode;
+    entry->mtime_sec = st.st_mtime;
+    entry->size = st.st_size;
+
+    return index_save(index);
 }
