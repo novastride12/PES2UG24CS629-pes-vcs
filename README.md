@@ -155,6 +155,9 @@ pes init → pes add → pes commit → pes log
 ## 🔹 Final Integration
 
 * `make test-integration` passed successfully
+  <img width="730" height="547" alt="Screenshot 2026-04-21 124319" src="https://github.com/user-attachments/assets/04e3e1c0-9b59-430f-8e3b-66d0a1da201f" />
+<img width="674" height="961" alt="Screenshot 2026-04-21 124301" src="https://github.com/user-attachments/assets/9b2d7e16-be50-4428-a70e-127bfc84c60a" />
+
 
 ---
 
